@@ -141,19 +141,35 @@ class FileSystemExplorer(CustomTree, tk.Tk):
             print(result.value)
 
     def dfs_search(self, current_node, target_file):
-        if current_node is None:
-            return None  # Target not found in the current subtree
+        stack = [current_node]
 
-        if current_node.value == target_file:
-            if target_file not in self.path_list:
-                self.path_list.append(current_node.value)
-            return current_node  # Target file found
+        while stack:
+            current_node = stack.pop()
 
-        # Recursively search in the child nodes (subdirectories)
-        for child in current_node.children:
-            result = self.dfs_search(child, target_file)
-            if result:
-                return result  # Target file found in one of the child subtrees
+            if current_node.value == target_file:
+                if target_file not in self.path_list:
+                    self.path_list.append(current_node.value)
+                return current_node  # Target file found
+
+            # Push children onto the stack in reverse order to visit them in the original order
+            stack.extend(reversed(current_node.children))
+
+        return None  # Target file not found
+    # def dfs_search(self, current_node, target_file):
+    #     stack = [current_node]
+    #
+    #     while stack:
+    #         current_node = stack.pop()
+    #
+    #         if current_node.value == target_file:
+    #             if target_file not in self.path_list:
+    #                 self.path_list.append(current_node.value)
+    #             return current_node  # Target file found
+    #
+    #         # Add children to the stack for further traversal
+    #         stack.extend(current_node.children)
+    #
+    #     return None  # Target file not found
 
     def populate_search_tree(self, current_node, parent=""):
         item_text = str(current_node.value)
